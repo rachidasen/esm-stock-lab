@@ -86,8 +86,12 @@
       position: sticky;
       bottom: 0;
       background: var(--bg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    footer.legal svg { display: block; margin-bottom: 6px; fill: var(--yellow); }
+    footer.legal svg { flex: 0 0 auto; fill: var(--yellow); }
+    footer.legal div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   </style>
 </head>
 <body>
