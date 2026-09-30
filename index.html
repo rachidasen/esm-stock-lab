@@ -77,13 +77,23 @@
     th { color: var(--muted); font-weight: 550; font-size: 12px; }
     tr:hover td { background: #22261c; }
     .sym { font-weight: 600; }
-    footer { margin-top: 28px; color: var(--muted); font-size: 12px; }
+    footer.legal {
+      margin-top: 28px;
+      padding: 12px 0 8px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      position: sticky;
+      bottom: 0;
+      background: var(--bg);
+    }
+    footer.legal strong { color: var(--text); font-weight: 600; }
   </style>
 </head>
 <body>
 <main>
   <h1>ESM stock lab</h1>
-  <p class="lead"><strong>Last updated 01 Oct 2026, 03:35 IST</strong></p>
+  <p class="lead"><strong>Last updated 01 Oct 2026, 03:36 IST</strong></p>
   <p class="lead">
     812 live ESM rows as of 2026-10-01: NSE 286 / BSE 526, Stage 1 694 / Stage 2 118.
     Dual-listed names are two rows. Scores are local EOD snapshots, not live quotes.
@@ -120,10 +130,8 @@
       <tbody id="body"></tbody>
     </table>
   </div>
-  <footer>
-    Current = reported books (Piotroski, P/S, cash flow, debt, promoter, FII+DII), 0–100.
-    Future = cheapness + 3-month RS vs Nifty until a story file is filled.
-    Exit dates assume last close held flat through Friday reviews.
+  <footer class="legal">
+    <strong>Disclaimer.</strong>
     This page is not from a SEBI-registered research analyst or investment adviser.
     Nothing here is a buy, sell, or hold recommendation. Model output only, for information.
     Not affiliated with NSE or BSE.
