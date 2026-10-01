@@ -17,7 +17,7 @@
       --chip: #25291e;
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; }
+    html { overflow-y: scroll; }
     body {
       margin: 0;
       font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -27,17 +27,10 @@
     main {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 16px 20px 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      padding: 16px 20px 24px;
     }
-    .chrome { flex: 0 0 auto; }
     .table-wrap {
-      flex: 1 1 auto;
-      min-height: 160px;
-      overflow: auto;
+      overflow-x: auto;
       border: 1px solid var(--line);
       border-radius: 10px;
     }
@@ -182,7 +175,6 @@
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 12px;
-      flex: 0 0 auto;
       background: var(--bg);
       display: flex;
       align-items: center;
@@ -196,7 +188,7 @@
 <main>
   <div class="chrome">
   <h1>ESM stock lab</h1>
-  <p class="lead"><strong>Last updated 01 Oct 2026, 11:09 IST</strong></p>
+  <p class="lead"><strong>Last updated 01 Oct 2026, 14:56 IST</strong></p>
   <p class="lead">
     812 live ESM rows as of 2026-10-01: NSE 286 / BSE 526, Stage 1 694 / Stage 2 118.
     Dual-listed names are two rows. Scores are local EOD snapshots, not live quotes.
@@ -629,7 +621,7 @@ function render() {
     ["Quality growth", qg],
     ["Turnaround flags", turns],
   ].map(([l,v]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
-  document.getElementById("count").textContent = `${list.length} match. Table scrolls; filters stay put.`;
+  document.getElementById("count").textContent = `${list.length} match. Scroll the page for the full table.`;
   document.getElementById("head").innerHTML = "<tr>" + headers().map(h => h.startsWith("<th") ? h : `<th>${h}</th>`).join("") + "</tr>";
   document.getElementById("head").querySelectorAll("th.sortable").forEach(el => {
     el.onclick = () => clickSort(el.dataset.col, el.dataset.dir);
