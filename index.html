@@ -268,7 +268,7 @@ function fmt(v, d=1) {
 function tone(r) {
   if (r.turnFlag) return "y";
   if (r.bucket === "QUALITY_GROWTH") return "g";
-  if (r.days !== undefined && r.days <= 8) return "b";
+  if (r.gone || (r.days !== undefined && r.days <= 8)) return "b";
   return "";
 }
 function pills(id, items, key) {
@@ -705,8 +705,8 @@ function render() {
     xhead.innerHTML = "<tr>" + exitHeaders().map(h => `<th>${h}</th>`).join("") + "</tr>";
     const xcols = exitHeaders().length;
     xbody.innerHTML = xlist.map(r => {
-      const t = "b";
-      const first = `<td><i class="dot ${t}"></i></td>`;
+      const t = tone(r);
+      const first = `<td>${t ? `<i class="dot ${t}"></i>` : ""}</td>`;
       const rest = exitCells(r).map((c,i) => `<td${i===0?' class="sym"':""}>${c}</td>`).join("");
       let html = `<tr>${first}${rest}</tr>`;
       if (expandKeys.has(stockKey(r))) {
