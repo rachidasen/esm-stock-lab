@@ -288,7 +288,7 @@
 <main>
   <div class="chrome">
   <h1>ESM stock lab</h1>
-  <p class="lead"><strong>Last updated 04 Oct 2026, 16:43 IST</strong></p>
+  <p class="lead"><strong>Last updated 04 Oct 2026, 23:56 IST</strong></p>
   <p class="lead">
     715 live ESM rows as of 2026-10-04: NSE 234 / BSE 481, Stage 1 599 / Stage 2 116.
     262 names sit on the Exits tab for 30 days after their ESM exit date.
@@ -1021,13 +1021,13 @@ render();
 <script
   defer
   crossorigin="anonymous"
-  src="https://amusing-flounder-4112.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js"
+  src="https://clerk.rachidasen.github.io/npm/@clerk/ui@1/dist/ui.browser.js"
 ></script>
 <script
   defer
   crossorigin="anonymous"
-  data-clerk-publishable-key="pk_test_YW11c2luZy1mbG91bmRlci00MTEyLmNsZXJrLmFjY291bnRzLmRldiQ"
-  src="https://amusing-flounder-4112.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+  data-clerk-publishable-key="pk_live_Y2xlcmsucmFjaGlkYXNlbi5naXRodWIuaW8k"
+  src="https://clerk.rachidasen.github.io/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
 ></script>
 <script>
 // Publishable key only. Sign-in state is enforced in the browser, not on a server.
@@ -1040,7 +1040,7 @@ window.addEventListener("load", async function () {
   var signUpBtn = document.getElementById("clerk-sign-up");
   var clerk = window.Clerk;
   if (clerk && typeof clerk.load !== "function" && typeof clerk === "function") {
-    clerk = new clerk("pk_test_YW11c2luZy1mbG91bmRlci00MTEyLmNsZXJrLmFjY291bnRzLmRldiQ");
+    clerk = new clerk("pk_live_Y2xlcmsucmFjaGlkYXNlbi5naXRodWIuaW8k");
   }
   if (!clerk || typeof clerk.load !== "function") {
     if (errEl) errEl.textContent = "Sign-in did not load.";
