@@ -247,22 +247,78 @@
   </style>
 
     <style>
+      :root {
+        --clerk-color-primary: #e8eadf;
+        --clerk-color-primary-foreground: #12140f;
+        --clerk-color-background: #1b1e16;
+        --clerk-color-foreground: #e8eadf;
+        --clerk-color-muted-foreground: #9aa38c;
+        --clerk-color-input: #12140f;
+        --clerk-color-input-foreground: #e8eadf;
+        --clerk-color-border: #2e3428;
+        --clerk-color-neutral: #9aa38c;
+        --clerk-color-ring: #e8eadf;
+        --clerk-color-danger: #c45c5c;
+        --clerk-color-success: #3d9a6a;
+        --clerk-color-warning: #c4a035;
+        --clerk-color-modal-backdrop: rgba(18, 20, 15, 0.72);
+        --clerk-border-radius: 10px;
+        --clerk-font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --clerk-font-family-buttons: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --clerk-font-size: 14px;
+      }
       body.clerk-locked main { display: none !important; }
       body:not(.clerk-locked) #clerk-locked-note { display: none; }
       #clerk-bar {
-        display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--bg);
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--bg);
         position: sticky; top: 0; z-index: 40;
+      }
+      #clerk-brand {
+        font-size: 16px; font-weight: 650; letter-spacing: -0.015em; color: var(--text);
       }
       #clerk-auth, #clerk-signed-out { display: flex; align-items: center; gap: 8px; }
       #clerk-bar button {
-        background: var(--panel); color: var(--text); border: 1px solid var(--line);
-        border-radius: 8px; padding: 6px 12px; cursor: pointer; font: inherit;
+        font: inherit; font-size: 13px; font-weight: 600; line-height: 1.2;
+        border-radius: 999px; padding: 7px 14px; cursor: pointer;
+        border: 1px solid var(--line); background: transparent; color: var(--text);
       }
-      #clerk-sign-up { background: var(--text); color: var(--bg); }
+      #clerk-sign-in:hover { background: var(--chip); border-color: var(--muted); }
+      #clerk-sign-up { background: var(--text); color: var(--bg); border-color: var(--text); }
+      #clerk-sign-up:hover { background: #f3f5ea; border-color: #f3f5ea; }
+      #clerk-bar button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
       #clerk-user { display: flex; align-items: center; }
-      #clerk-locked-note { padding: 24px 16px; }
-      #clerk-error { color: var(--yellow); min-height: 1.2em; margin: 0 16px; }
+      #clerk-locked-note {
+        padding: 28px 20px 8px; max-width: 1180px; margin: 0 auto;
+      }
+      #clerk-error { color: var(--yellow); min-height: 1.2em; margin: 0 auto; max-width: 1180px; padding: 0 20px; }
+      .cl-card, .cl-cardBox, .cl-modalContent {
+        background: #1b1e16; color: #e8eadf;
+        border: 1px solid #2e3428; border-radius: 10px; box-shadow: none;
+      }
+      .cl-headerTitle { color: #e8eadf; font-size: 22px; font-weight: 650; }
+      .cl-headerSubtitle { color: #9aa38c; font-size: 14px; line-height: 1.45; }
+      .cl-formFieldLabel, .cl-dividerText, .cl-footerActionText { color: #9aa38c; }
+      .cl-formFieldInput, .cl-otpCodeFieldInput {
+        background: #12140f; color: #e8eadf; border: 1px solid #2e3428; border-radius: 8px;
+        box-shadow: none;
+      }
+      .cl-formButtonPrimary {
+        background: #e8eadf; color: #12140f; border-radius: 8px; box-shadow: none;
+        text-transform: none; font-weight: 600;
+      }
+      .cl-formButtonPrimary:hover, .cl-formButtonPrimary:focus { background: #f3f5ea; color: #12140f; }
+      .cl-socialButtonsBlockButton {
+        background: #25291e; color: #e8eadf; border: 1px solid #2e3428; border-radius: 8px;
+        box-shadow: none;
+      }
+      .cl-dividerLine { background: #2e3428; }
+      .cl-footer, .cl-footerAction { background: transparent; }
+      .cl-footerActionLink { color: #e8eadf; font-weight: 600; }
+      .cl-modalBackdrop { background: rgba(18, 20, 15, 0.72); }
+      .cl-modalCloseButton, .cl-formFieldInputShowPasswordButton { color: #9aa38c; }
+      .cl-logoBox, .cl-logoImage { display: none; }
+      .cl-identityPreview { background: #12140f; border: 1px solid #2e3428; border-radius: 8px; }
     </style>
 </head>
 <body class="clerk-locked">
@@ -270,10 +326,11 @@
 <!-- Clerk publishable key only. No secret key.
      Client-side gating hides the lab tables until Clerk reports a signed-in user.
      It does NOT stop someone from reading STOCKS and EXITS in this HTML.
-     The dataset is not secret. Allowed origins to set in the Clerk dashboard:
-     https://rachidasen.github.io and http://127.0.0.1 -->
+     The dataset is not secret.
+     After sign-in or sign-up, return to https://rachidasen.github.io/esm-stock-lab/
+     Local preview (127.0.0.1 or localhost) returns to that origin instead. -->
 <header id="clerk-bar">
-  <strong>ESM stock lab</strong>
+  <span id="clerk-brand">ESM stock lab</span>
   <div id="clerk-auth">
     <div id="clerk-signed-out">
       <button type="button" id="clerk-sign-in">Sign in</button>
@@ -288,9 +345,9 @@
 <main>
   <div class="chrome">
   <h1>ESM stock lab</h1>
-  <p class="lead"><strong>Last updated 04 Oct 2026, 23:56 IST</strong></p>
+  <p class="lead"><strong>Last updated 05 Oct 2026, 02:36 IST</strong></p>
   <p class="lead">
-    715 live ESM rows as of 2026-10-04: NSE 234 / BSE 481, Stage 1 599 / Stage 2 116.
+    715 live ESM rows as of 2026-10-05: NSE 234 / BSE 481, Stage 1 599 / Stage 2 116.
     262 names sit on the Exits tab for 30 days after their ESM exit date.
     Dual-listed names are two rows. Scores are local EOD snapshots, not live quotes.
   </p>
@@ -1038,22 +1095,64 @@ window.addEventListener("load", async function () {
   var errEl = document.getElementById("clerk-error");
   var signInBtn = document.getElementById("clerk-sign-in");
   var signUpBtn = document.getElementById("clerk-sign-up");
+  var labHome = "https://rachidasen.github.io/esm-stock-lab/";
+  if (location.hostname === "127.0.0.1" || location.hostname === "localhost") {
+    labHome = location.origin + "/";
+  }
+  var redirectOpts = {
+    signInFallbackRedirectUrl: labHome,
+    signUpFallbackRedirectUrl: labHome,
+    signInForceRedirectUrl: labHome,
+    signUpForceRedirectUrl: labHome
+  };
+  var modalProps = {
+    forceRedirectUrl: labHome,
+    fallbackRedirectUrl: labHome,
+    signInForceRedirectUrl: labHome,
+    signInFallbackRedirectUrl: labHome,
+    signUpForceRedirectUrl: labHome,
+    signUpFallbackRedirectUrl: labHome
+  };
+  var clerkLayout = {
+    applicationName: "ESM stock lab",
+    socialButtonsPlacement: "bottom",
+    socialButtonsVariant: "blockButton",
+    logoPlacement: "none"
+  };
   var clerk = window.Clerk;
   if (clerk && typeof clerk.load !== "function" && typeof clerk === "function") {
-    clerk = new clerk("pk_test_YWxsb3dlZC1oeWVuYS04NDA3LmNsZXJrLmFjY291bnRzLmRldiQ");
+    clerk = new clerk("pk_test_YWxsb3dlZC1oeWVuYS04NDA3LmNsZXJrLmFjY291bnRzLmRldiQ", Object.assign({}, redirectOpts, {
+      appearance: { layout: clerkLayout, options: clerkLayout }
+    }));
   }
   if (!clerk || typeof clerk.load !== "function") {
     if (errEl) errEl.textContent = "Sign-in did not load.";
     return;
   }
   if (signInBtn) signInBtn.addEventListener("click", function () {
-    if (typeof clerk.openSignIn === "function") clerk.openSignIn();
+    if (typeof clerk.openSignIn === "function") clerk.openSignIn(modalProps);
   });
   if (signUpBtn) signUpBtn.addEventListener("click", function () {
-    if (typeof clerk.openSignUp === "function") clerk.openSignUp();
+    if (typeof clerk.openSignUp === "function") clerk.openSignUp(modalProps);
   });
   try {
-    var opts = {};
+    var opts = Object.assign({}, redirectOpts, {
+      appearance: { layout: clerkLayout, options: clerkLayout },
+      localization: {
+        signIn: { start: {
+          title: "Sign in to ESM stock lab",
+          titleCombined: "Sign in to ESM stock lab",
+          subtitle: "NSE and BSE surveillance lists, and when those names leave.",
+          subtitleCombined: "NSE and BSE surveillance lists, and when those names leave."
+        } },
+        signUp: { start: {
+          title: "Sign up for ESM stock lab",
+          titleCombined: "Sign up for ESM stock lab",
+          subtitle: "NSE and BSE surveillance lists, and when those names leave.",
+          subtitleCombined: "NSE and BSE surveillance lists, and when those names leave."
+        } }
+      }
+    });
     if (window.__internal_ClerkUICtor) opts.ui = { ClerkUI: window.__internal_ClerkUICtor };
     await clerk.load(opts);
   } catch (err) {
