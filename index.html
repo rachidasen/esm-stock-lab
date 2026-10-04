@@ -117,7 +117,14 @@
     th.sortable { cursor: pointer; user-select: none; }
     th[title] { cursor: help; }
     th.sortable[title] { cursor: pointer; }
-    .tip { color: var(--muted); font-size: 10px; }
+    .tip { color: var(--muted); font-size: 11px; cursor: help; padding: 0 2px; border-radius: 4px; }
+    .tip:hover, .tip:focus { color: var(--text, inherit); outline: none; background: var(--line); }
+    .tip-pop {
+      position: fixed; z-index: 50; max-width: 300px; padding: 8px 10px;
+      background: #1f2937; color: #f9fafb; border: 1px solid #4b5563; border-radius: 8px;
+      font-size: 12px; line-height: 1.4; font-weight: 400; text-align: left; white-space: normal;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25); pointer-events: none;
+    }
     th.sortable:hover { color: var(--text); }
     th.af { position: relative; }
     button.af-btn {
@@ -241,7 +248,7 @@
 <main>
   <div class="chrome">
   <h1>ESM stock lab</h1>
-  <p class="lead"><strong>Last updated 04 Oct 2026, 11:25 IST</strong></p>
+  <p class="lead"><strong>Last updated 04 Oct 2026, 11:28 IST</strong></p>
   <p class="lead">
     715 live ESM rows as of 2026-10-04: NSE 234 / BSE 481, Stage 1 600 / Stage 2 115.
     173 names sit on the Exits tab for 30 days after their ESM exit date.
@@ -471,12 +478,44 @@ const TECH_TIPS = {
   rsi: "RSI 14-day (Wilder) on daily closes",
   div: "RSI divergence over the last 40 daily sessions, swing points ±4 sessions",
 };
+function tipIcon(key) {
+  return `<span class="tip" tabindex="0" role="button" aria-label="${esc(TECH_TIPS[key])}" data-tip="${esc(TECH_TIPS[key])}">ⓘ</span>`;
+}
 function tip(label, key) {
-  return `<th title="${esc(TECH_TIPS[key])}">${label} <span class="tip">ⓘ</span></th>`;
+  return `<th>${label} ${tipIcon(key)}</th>`;
 }
 function techHeads() {
-  return [th("Tech","tech","desc").replace("<th ", `<th title="${esc(TECH_TIPS.tech)}" `), tip("Darvas","darvas"), tip("MACD","macd"), tip("RSI","rsi"), tip("Div","div")];
+  return [th("Tech","tech","desc").replace("</th>", ` ${tipIcon("tech")}</th>`), tip("Darvas","darvas"), tip("MACD","macd"), tip("RSI","rsi"), tip("Div","div")];
 }
+const tipBox = document.createElement("div");
+tipBox.className = "tip-pop";
+tipBox.hidden = true;
+document.body.appendChild(tipBox);
+let tipFor = null;
+function showTip(el) {
+  tipFor = el;
+  tipBox.textContent = el.dataset.tip;
+  tipBox.hidden = false;
+  const r = el.getBoundingClientRect(), w = tipBox.offsetWidth, h = tipBox.offsetHeight;
+  const left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 8));
+  const top = r.bottom + 6 + h > window.innerHeight ? r.top - h - 6 : r.bottom + 6;
+  tipBox.style.left = left + "px";
+  tipBox.style.top = top + "px";
+}
+function hideTip() { tipFor = null; tipBox.hidden = true; }
+document.addEventListener("mouseover", e => {
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (el) showTip(el); else if (tipFor) hideTip();
+});
+document.addEventListener("focusin", e => { if (e.target.dataset && e.target.dataset.tip) showTip(e.target); });
+document.addEventListener("focusout", hideTip);
+document.addEventListener("click", e => {
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (!el) return hideTip();
+  e.stopPropagation();
+  tipFor === el && !tipBox.hidden ? hideTip() : showTip(el);
+}, true);
+window.addEventListener("scroll", hideTip, true);
 function techCells(r) {
   return [fmt(r.tech), r.darvas || "—", r.macd || "—", fmt(r.rsi), r.rsiDiv || "—"];
 }
@@ -810,7 +849,7 @@ function render() {
   }
   if (state.lens === "tech") {
     document.getElementById("count").textContent +=
-      " Technicals use daily bars: Darvas 60 sessions, MACD 12/26/9, RSI 14-day, divergence 40 sessions. Hover a header for details.";
+      " Technicals use daily bars: Darvas 60 sessions, MACD 12/26/9, RSI 14-day, divergence 40 sessions. Hover or tap ⓘ for details.";
   }
   const headCols = liveOn ? headers() : exitHeaders();
   document.getElementById("head").innerHTML = "<tr>" + headCols.map(h => h.startsWith("<th") ? h : `<th>${h}</th>`).join("") + "</tr>";
