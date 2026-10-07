@@ -17,20 +17,24 @@
       --chip: #25291e;
     }
     * { box-sizing: border-box; }
-    html { overflow-y: scroll; }
+    html { overflow-y: scroll; overflow-x: clip; }
     body {
       margin: 0;
+      max-width: 100%;
       font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
     main {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 16px 20px 24px;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 12px 16px 24px;
     }
     .table-wrap {
-      overflow-x: auto;
+      overflow-x: clip;
+      width: 100%;
+      max-width: 100%;
       border: 1px solid var(--line);
       border-radius: 10px;
     }
@@ -108,11 +112,32 @@
       border-collapse: collapse;
       font-variant-numeric: tabular-nums;
     }
+    .table-wrap > table {
+      table-layout: fixed;
+      width: 100%;
+      max-width: 100%;
+    }
+    .table-wrap > table > thead > tr > th:nth-child(1) { width: 2.4%; }
+    .table-wrap > table > thead > tr > th:nth-child(2) { width: 10%; }
+    .table-wrap > table > thead > tr > th:nth-child(3) { width: 13%; }
+    .table-wrap > table > thead > tr > th:nth-child(4) { width: 4.4%; }
+    .table-wrap > table > thead > tr > th:nth-child(5) { width: 3.6%; }
+    .table-wrap > table > thead > tr > th:nth-child(6) { width: 14%; }
     th, td {
       text-align: left;
-      padding: 8px 8px;
+      padding: 4px 3px;
       border-bottom: 1px solid var(--line);
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      vertical-align: top;
+      min-width: 0;
+    }
+    .table-wrap .af-menu,
+    .table-wrap .af-menu * {
+      overflow-wrap: normal;
+      word-break: normal;
+      vertical-align: baseline;
     }
     th.sortable { cursor: pointer; user-select: none; }
     th[title] { cursor: help; }
@@ -156,6 +181,7 @@
     button.lnk {
       background: none; border: 1px solid var(--line); color: var(--muted);
       border-radius: 8px; padding: 3px 8px; cursor: pointer; font-size: 11px; margin-right: 4px;
+      white-space: normal;
     }
     button.lnk.on { color: var(--bg); background: var(--text); border-color: var(--text); }
     a.lnk {
@@ -243,10 +269,105 @@
       gap: 8px;
     }
     footer.legal svg { flex: 0 0 auto; fill: var(--yellow); }
-    footer.legal div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    footer.legal div { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   </style>
+
+    <style>
+      :root {
+        --clerk-color-primary: #e8eadf;
+        --clerk-color-primary-foreground: #12140f;
+        --clerk-color-background: #1b1e16;
+        --clerk-color-foreground: #e8eadf;
+        --clerk-color-muted-foreground: #9aa38c;
+        --clerk-color-input: #12140f;
+        --clerk-color-input-foreground: #e8eadf;
+        --clerk-color-border: #2e3428;
+        --clerk-color-neutral: #9aa38c;
+        --clerk-color-ring: #e8eadf;
+        --clerk-color-danger: #c45c5c;
+        --clerk-color-success: #3d9a6a;
+        --clerk-color-warning: #c4a035;
+        --clerk-color-modal-backdrop: rgba(18, 20, 15, 0.72);
+        --clerk-border-radius: 10px;
+        --clerk-font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --clerk-font-family-buttons: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        --clerk-font-size: 14px;
+      }
+      body.clerk-locked main { display: none !important; }
+      body:not(.clerk-locked) #clerk-locked-note { display: none; }
+      #clerk-bar {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--bg);
+        position: sticky; top: 0; z-index: 40;
+      }
+      #clerk-brand {
+        font-size: 16px; font-weight: 650; letter-spacing: -0.015em; color: var(--text);
+      }
+      #clerk-auth, #clerk-signed-out { display: flex; align-items: center; gap: 8px; }
+      #clerk-bar button {
+        font: inherit; font-size: 13px; font-weight: 600; line-height: 1.2;
+        border-radius: 999px; padding: 7px 14px; cursor: pointer;
+        border: 1px solid var(--line); background: transparent; color: var(--text);
+      }
+      #clerk-sign-in:hover { background: var(--chip); border-color: var(--muted); }
+      #clerk-sign-up { background: var(--text); color: var(--bg); border-color: var(--text); }
+      #clerk-sign-up:hover { background: #f3f5ea; border-color: #f3f5ea; }
+      #clerk-bar button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+      #clerk-user { display: flex; align-items: center; }
+      #clerk-locked-note {
+        padding: 28px 20px 8px; max-width: 1180px; margin: 0 auto;
+      }
+      #clerk-error { color: var(--yellow); min-height: 1.2em; margin: 0 auto; max-width: 1180px; padding: 0 20px; }
+      .cl-card, .cl-cardBox, .cl-modalContent {
+        background: #1b1e16; color: #e8eadf;
+        border: 1px solid #2e3428; border-radius: 10px; box-shadow: none;
+      }
+      .cl-headerTitle { color: #e8eadf; font-size: 22px; font-weight: 650; }
+      .cl-headerSubtitle { color: #9aa38c; font-size: 14px; line-height: 1.45; }
+      .cl-formFieldLabel, .cl-dividerText, .cl-footerActionText { color: #9aa38c; }
+      .cl-formFieldInput, .cl-otpCodeFieldInput {
+        background: #12140f; color: #e8eadf; border: 1px solid #2e3428; border-radius: 8px;
+        box-shadow: none;
+      }
+      .cl-formButtonPrimary {
+        background: #e8eadf; color: #12140f; border-radius: 8px; box-shadow: none;
+        text-transform: none; font-weight: 600;
+      }
+      .cl-formButtonPrimary:hover, .cl-formButtonPrimary:focus { background: #f3f5ea; color: #12140f; }
+      .cl-socialButtonsBlockButton {
+        background: #25291e; color: #e8eadf; border: 1px solid #2e3428; border-radius: 8px;
+        box-shadow: none;
+      }
+      .cl-dividerLine { background: #2e3428; }
+      .cl-footer, .cl-footerAction { background: transparent; }
+      .cl-footerActionLink { color: #e8eadf; font-weight: 600; }
+      .cl-modalBackdrop { background: rgba(18, 20, 15, 0.72); }
+      .cl-modalCloseButton, .cl-formFieldInputShowPasswordButton { color: #9aa38c; }
+      .cl-logoBox, .cl-logoImage { display: none; }
+      .cl-identityPreview { background: #12140f; border: 1px solid #2e3428; border-radius: 8px; }
+    </style>
 </head>
-<body>
+<body class="clerk-locked">
+
+<!-- Clerk publishable key only. No secret key.
+     Client-side gating hides the lab until Clerk reports a signed-in user.
+     If this build set an API base, the tables load after sign-in from that API.
+     If it did not, the rows are still in this file.
+     After sign-in or sign-up, return to https://rachidasen.github.io/esm-stock-lab/
+     Local preview (127.0.0.1 or localhost) returns to that origin instead. -->
+<header id="clerk-bar">
+  <span id="clerk-brand">ESM stock lab</span>
+  <div id="clerk-auth">
+    <div id="clerk-signed-out">
+      <button type="button" id="clerk-sign-in">Sign in</button>
+      <button type="button" id="clerk-sign-up">Sign up</button>
+    </div>
+    <div id="clerk-user" hidden></div>
+  </div>
+</header>
+<p id="clerk-locked-note" class="lead">Sign in to open the lab.</p>
+<p id="clerk-error" class="note"></p>
+
 <main>
   <div class="chrome">
   <h1>ESM stock lab</h1>
@@ -266,7 +387,7 @@
   <div class="row" id="lens"></div>
   <div class="row">
     <input id="q" placeholder="Search symbol, sector or ISIN" />
-    <select id="sort" class="live-only">
+    <select id="sort">
       <option value="days">Soonest ESM exit (days)</option>
       <option value="exit">Post-exit 1st trading day</option>
       <option value="ex">Exchange</option>
@@ -280,8 +401,8 @@
       <option value="dealN">Deals in 30 days</option>
     </select>
     <label class="check live-only"><input type="checkbox" id="priced" checked /> Has price history</label>
-    <label class="check live-only"><input type="checkbox" id="qg" /> Quality growth</label>
-    <label class="check live-only"><input type="checkbox" id="turn" /> Turnaround flag</label>
+    <label class="check"><input type="checkbox" id="qg" /> Quality growth</label>
+    <label class="check"><input type="checkbox" id="turn" /> Turnaround flag</label>
   </div>
   <div class="row">
     <span class="note">Watchlist from this tab</span>
@@ -325,8 +446,8 @@ function fmt(v, d=1) {
   return v;
 }
 function tone(r) {
-  if (r.turnFlag) return "y";
   if (r.bucket === "QUALITY_GROWTH") return "g";
+  if (r.turnFlag) return "y";
   if (r.gone || (r.days !== undefined && r.days <= 8)) return "b";
   return "";
 }
@@ -346,11 +467,12 @@ function getSort() {
   return { col: document.getElementById("sort").value, dir: state.sortDir };
 }
 function forceSort(col, dir) {
+  const sel = document.getElementById("sort");
+  if ([...sel.options].some(o => o.value === col)) sel.value = col;
   if (state.view === "exits") {
     state.xSort = col;
     state.xDir = dir;
   } else {
-    document.getElementById("sort").value = col;
     state.sortDir = dir;
   }
   render();
@@ -365,12 +487,12 @@ function arrow(col) {
   return cur.dir === "asc" ? " ↑" : " ↓";
 }
 const AF_COLS = {
-  live: ["ex","exit","current","future"],
-  exits: ["ex","stage","exit","current","future"],
+  live: ["ex","exit","current","future","turn","fscore","ps","rs","tech","darvas","macd","rsi","rsiDiv"],
+  exits: ["ex","stage","exit","current","future","turn","fscore","ps","rs","tech","darvas","macd","rsi","rsiDiv","r1d","r1w","r2w"],
 };
 const afHidden = { live: {}, exits: {} };
 Object.keys(AF_COLS).forEach(v => AF_COLS[v].forEach(c => { afHidden[v][c] = new Set(); }));
-const STR_COLS = new Set(["ex","stage","exit"]);
+const STR_COLS = new Set(["ex","stage","exit","darvas","macd","rsiDiv"]);
 let afOpen = null;
 let afSearch = "";
 function esc(s) {
@@ -488,8 +610,8 @@ function circuitCell(r) {
   return `<span class="tip" tabindex="0" role="button" data-tip="${esc(r.circuitTip)}">${esc(text)}</span>`;
 }
 function headers() {
-  if (state.lens === "quality") return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), th("Current","current","desc"), th("Future","future","desc"), "F", "P/S", "RS %", dealHead()];
-  if (state.lens === "turnaround") return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), "Turn", th("Current","current","desc"), th("Future","future","desc"), "RS %", "F"];
+  if (state.lens === "quality") return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), th("Current","current","desc"), th("Future","future","desc"), th("F","fscore","desc"), th("P/S","ps","asc"), th("RS %","rs","desc"), dealHead()];
+  if (state.lens === "turnaround") return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), th("Turn","turn","desc"), th("Current","current","desc"), th("Future","future","desc"), th("RS %","rs","desc"), th("F","fscore","desc")];
   if (state.lens === "tech") return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), ...techHeads()];
   return ["", "Symbol", "Links", th("Ex","ex","asc"), "St", circuitHead(), th("Post-exit 1st trading day","exit","asc"), "Days", "S2 drop", th("Current","current","desc"), th("Future","future","desc")];
 }
@@ -505,7 +627,11 @@ function cells(r) {
 }
 function exitPass(r, skip) {
   const needle = document.getElementById("q").value.trim().toUpperCase();
+  const qg = document.getElementById("qg").checked;
+  const turn = document.getElementById("turn").checked;
   if (state.exch !== "both" && r.ex !== state.exch) return false;
+  if (qg && r.bucket !== "QUALITY_GROWTH") return false;
+  if (turn && !r.turnFlag) return false;
   if (needle && !r.symbol.includes(needle) && !(r.sector || "").toUpperCase().includes(needle) && (r.isin || "") !== needle) return false;
   return afPass(r, "exits", skip);
 }
@@ -528,7 +654,10 @@ function tip(label, key) {
   return `<th>${label} ${tipIcon(key)}</th>`;
 }
 function techHeads() {
-  return [th("Tech","tech","desc").replace("</th>", ` ${tipIcon("tech")}</th>`), tip("Darvas","darvas"), tip("MACD","macd"), tip("RSI","rsi"), tip("Div","div")];
+  function tipped(label, col, dir, key) {
+    return th(label, col, dir).replace("</th>", ` ${tipIcon(key)}</th>`);
+  }
+  return [tipped("Tech","tech","desc","tech"), tipped("Darvas","darvas","asc","darvas"), tipped("MACD","macd","asc","macd"), tipped("RSI","rsi","desc","rsi"), tipped("Div","rsiDiv","asc","div")];
 }
 const tipBox = document.createElement("div");
 tipBox.className = "tip-pop";
@@ -579,8 +708,8 @@ function pct(v, title) {
 function exitHeaders() {
   const base = ["", "Symbol", "Links", th("Ex","ex","asc"), th("St","stage","asc"), circuitHead(), th("Post-exit 1st trading day","exit","desc"),
     retHead("Last trading day","r1d"), retHead("1W","r1w"), retHead("2W","r2w")];
-  if (state.lens === "quality") return [...base, th("Current","current","desc"), th("Future","future","desc"), "F", "P/S", "RS %", dealHead()];
-  if (state.lens === "turnaround") return [...base, "Turn", th("Current","current","desc"), th("Future","future","desc"), "RS %", "F"];
+  if (state.lens === "quality") return [...base, th("Current","current","desc"), th("Future","future","desc"), th("F","fscore","desc"), th("P/S","ps","asc"), th("RS %","rs","desc"), dealHead()];
+  if (state.lens === "turnaround") return [...base, th("Turn","turn","desc"), th("Current","current","desc"), th("Future","future","desc"), th("RS %","rs","desc"), th("F","fscore","desc")];
   if (state.lens === "tech") return [...base, ...techHeads()];
   return [...base, th("Current","current","desc"), th("Future","future","desc")];
 }
@@ -768,6 +897,7 @@ function dossier(r) {
   if (pane === "screener") {
     const items = [
       ["P/S", fmt(r.ps,2)],
+      ["P/B", fmt(r.pb,2)],
       ["P/CF", fmt(r.pcf,2)],
       ["P/FCF", fmt(r.pfcf,2)],
       ["Debt / equity", fmt(r.de,2)],
@@ -896,9 +1026,15 @@ function render() {
   } else {
     const nse = list.filter(r => r.ex==="NSE").length;
     const bse = list.filter(r => r.ex==="BSE").length;
+    const qg = list.filter(r => r.bucket === "QUALITY_GROWTH").length;
+    const turns = list.filter(r => r.turnFlag).length;
+    const techN = list.filter(r => typeof r.tech === "number").length;
     document.getElementById("stats").innerHTML = [
       ["Exit rows", list.length],
       ["NSE / BSE", nse + " / " + bse],
+      ["Quality growth", qg],
+      ["Turnaround flags", turns],
+      ["Technical scores", techN],
       ["Keep window", "30 days"],
     ].map(([l,v]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
     document.getElementById("count").textContent = list.length
@@ -984,7 +1120,13 @@ document.getElementById("exp-isin").onclick = () => exportWatchlist("isin");
   document.getElementById(id).addEventListener("change", () => {
     if (id === "sort") {
       const v = document.getElementById("sort").value;
-      state.sortDir = (v === "ex" || v === "exit" || v === "days" || v === "days2") ? "asc" : "desc";
+      const dir = (v === "ex" || v === "exit" || v === "days" || v === "days2") ? "asc" : "desc";
+      if (state.view === "exits") {
+        state.xSort = v;
+        state.xDir = dir;
+      } else {
+        state.sortDir = dir;
+      }
     }
     render();
   });
@@ -997,6 +1139,129 @@ document.addEventListener("click", e => {
   render();
 });
 render();
+</script>
+
+<script
+  defer
+  crossorigin="anonymous"
+  src="https://allowed-hyena-8407.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js"
+></script>
+<script
+  defer
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_YWxsb3dlZC1oeWVuYS04NDA3LmNsZXJrLmFjY291bnRzLmRldiQ"
+  src="https://allowed-hyena-8407.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+></script>
+<script>
+// Publishable key only. No secret key.
+// When this build set an API base, __esmLoadLab runs after a signed-in session
+// and fills the tables from that API. When the API base was empty, the rows
+// are already in this file and __esmLoadLab is absent.
+window.addEventListener("load", async function () {
+  var outEl = document.getElementById("clerk-signed-out");
+  var userEl = document.getElementById("clerk-user");
+  var errEl = document.getElementById("clerk-error");
+  var signInBtn = document.getElementById("clerk-sign-in");
+  var signUpBtn = document.getElementById("clerk-sign-up");
+  var labHome = "https://rachidasen.github.io/esm-stock-lab/";
+  if (location.hostname === "127.0.0.1" || location.hostname === "localhost") {
+    labHome = location.origin + "/";
+  }
+  var redirectOpts = {
+    signInFallbackRedirectUrl: labHome,
+    signUpFallbackRedirectUrl: labHome,
+    signInForceRedirectUrl: labHome,
+    signUpForceRedirectUrl: labHome
+  };
+  var modalProps = {
+    forceRedirectUrl: labHome,
+    fallbackRedirectUrl: labHome,
+    signInForceRedirectUrl: labHome,
+    signInFallbackRedirectUrl: labHome,
+    signUpForceRedirectUrl: labHome,
+    signUpFallbackRedirectUrl: labHome
+  };
+  var clerkLayout = {
+    applicationName: "ESM stock lab",
+    socialButtonsPlacement: "bottom",
+    socialButtonsVariant: "blockButton",
+    logoPlacement: "none"
+  };
+  var clerk = window.Clerk;
+  if (clerk && typeof clerk.load !== "function" && typeof clerk === "function") {
+    clerk = new clerk("pk_test_YWxsb3dlZC1oeWVuYS04NDA3LmNsZXJrLmFjY291bnRzLmRldiQ", Object.assign({}, redirectOpts, {
+      appearance: { layout: clerkLayout, options: clerkLayout }
+    }));
+  }
+  if (!clerk || typeof clerk.load !== "function") {
+    if (errEl) errEl.textContent = "Sign-in did not load.";
+    return;
+  }
+  if (signInBtn) signInBtn.addEventListener("click", function () {
+    if (typeof clerk.openSignIn === "function") clerk.openSignIn(modalProps);
+  });
+  if (signUpBtn) signUpBtn.addEventListener("click", function () {
+    if (typeof clerk.openSignUp === "function") clerk.openSignUp(modalProps);
+  });
+  try {
+    var opts = Object.assign({}, redirectOpts, {
+      appearance: { layout: clerkLayout, options: clerkLayout },
+      localization: {
+        signIn: { start: {
+          title: "Sign in to ESM stock lab",
+          titleCombined: "Sign in to ESM stock lab",
+          subtitle: "NSE and BSE surveillance lists, and when those names leave.",
+          subtitleCombined: "NSE and BSE surveillance lists, and when those names leave."
+        } },
+        signUp: { start: {
+          title: "Sign up for ESM stock lab",
+          titleCombined: "Sign up for ESM stock lab",
+          subtitle: "NSE and BSE surveillance lists, and when those names leave.",
+          subtitleCombined: "NSE and BSE surveillance lists, and when those names leave."
+        } }
+      }
+    });
+    if (window.__internal_ClerkUICtor) opts.ui = { ClerkUI: window.__internal_ClerkUICtor };
+    await clerk.load(opts);
+  } catch (err) {
+    if (errEl) errEl.textContent = "Sign-in did not load.";
+    return;
+  }
+  var mode = "";
+  async function paint() {
+    var next = (clerk.isSignedIn || clerk.user) ? "in" : "out";
+    if (next === mode) return;
+    mode = next;
+    if (next === "in") {
+      document.body.classList.remove("clerk-locked");
+      if (outEl) outEl.hidden = true;
+      if (userEl) userEl.hidden = false;
+      try { clerk.mountUserButton(userEl); } catch (e) {}
+      if (typeof window.__esmLoadLab === "function") {
+        var token = "";
+        try {
+          if (clerk.session && typeof clerk.session.getToken === "function") {
+            token = await clerk.session.getToken();
+          }
+        } catch (e) {
+          token = "";
+        }
+        await window.__esmLoadLab(token || "");
+      }
+    } else {
+      document.body.classList.add("clerk-locked");
+      try { clerk.unmountUserButton(userEl); } catch (e) {}
+      if (userEl) {
+        userEl.hidden = true;
+        userEl.replaceChildren();
+      }
+      if (outEl) outEl.hidden = false;
+      if (typeof window.__esmClearLab === "function") window.__esmClearLab();
+    }
+  }
+  paint();
+  if (typeof clerk.addListener === "function") clerk.addListener(paint);
+});
 </script>
 </body>
 </html>
