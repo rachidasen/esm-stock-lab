@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="NSE and BSE surveillance (ESM) lists with rule-based exit-eligibility dates. Rachid Asen's personal research. Not investment advice." />
+    <meta name="robots" content="noindex" />
     <title>ESM stock lab</title>
     <script>
       (function () {
@@ -31,13 +31,9 @@
         .disclaimer-banner p { font-size: 12px; line-height: 1.45; }
       }
     </style>
-    <!-- Clerk publishable key only. No secret key. Client-side gating hides the lab until Clerk reports a signed-in user. -->
-    <script defer crossorigin="anonymous" src="https://allowed-hyena-8407.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js"></script>
-    <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_test_YWxsb3dlZC1oeWVuYS04NDA3LmNsZXJrLmFjY291bnRzLmRldiQ" src="https://allowed-hyena-8407.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
-    <script type="module" crossorigin src="./assets/index-CHAokKqb.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-C5UXO2k4.css">
+    <script>(function(){var b="/esm-stock-lab/",p=location.pathname;if(p.indexOf(b)!==0)b="/";if(p===b||p===b+"index.html")return;location.replace(b+location.search+location.hash);})();</script>
   </head>
-  <body class="clerk-locked">
+  <body>
     <section class="disclaimer-banner" id="disclaimer" role="note" aria-labelledby="disclaimer-headline">
       <div class="dc-wrap">
         <svg viewBox="0 0 24 24" role="img" aria-label="Warning"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2V9h2v5z" /></svg>
@@ -47,17 +43,6 @@
         </div>
       </div>
     </section>
-    <div id="root"></div>
-    <noscript><p class="noscript">The ESM stock lab table needs JavaScript. The disclaimer above applies to everything on this page.</p></noscript>
-    <footer class="legal" id="footer">
-      <div class="wrap">
-        <span class="legal-line">
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2V9h2v5z" /></svg>
-          <a id="disclaimer-short" href="#disclaimer">Rachid Asen's personal research. Not investment advice. See disclaimer at top.</a>
-        </span>
-        <a class="legal-how" id="footer-how" href="#how">How to read this</a>
-        <span class="legal-src">Sources: NSE and BSE published ESM lists and end-of-day data · Market data © NSE/BSE</span>
-      </div>
-    </footer>
+    <p style="max-width:1440px;margin:16px auto;padding:0 24px;font:14px/1.5 ui-sans-serif,system-ui,sans-serif"><a href="/esm-stock-lab/">Open the ESM stock lab</a></p>
   </body>
 </html>
